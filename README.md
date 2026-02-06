@@ -149,23 +149,23 @@ Para executar os testes:
 mvn test
 ```
 
+## Docker
+
+Para rodar a aplicação com banco de dados usando Docker Compose:
+
+```bash
+docker-compose up -d --build
+```
+
+A API ficará disponível em `http://localhost:8080` e o banco de dados PostgreSQL na porta `5432`.
+
 ---
 
 ## Swagger / OpenAPI
 
-Para uma API como essa (autenticação + CRUD de produtos), é recomendado adicionar Swagger/OpenAPI para documentação automática e interface de testes.  
-Uma opção comum com Spring Boot 3 é usar `springdoc-openapi`. Exemplo de dependência no `pom.xml`:
+A documentação interativa da API já está configurada com **SpringDoc OpenAPI**.
+Após a aplicação estar rodando, acesse:
 
-```xml
-<dependency>
-    <groupId>org.springdoc</groupId>
-    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-    <version>2.7.0</version>
-</dependency>
-```
-
-Após adicionar a dependência e subir a aplicação, a documentação costuma ficar disponível em:
-
-- `http://localhost:8080/swagger-ui.html` ou  
-- `http://localhost:8080/swagger-ui/index.html`
+- Interface Visual (Swagger UI): `http://localhost:8080/swagger-ui.html`
+- JSON Docs: `http://localhost:8080/v3/api-docs`
 
