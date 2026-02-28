@@ -3,6 +3,8 @@
 API REST para gerenciamento de produtos com autenticação e autorização via JWT, desenvolvida em Spring Boot.  
 Permite cadastro e autenticação de usuários, além de operações de CRUD de produtos protegidas por token.
 
+![Demonstração do Swagger UI](./.docs/swagger-ui-screenshot.png)
+
 ## Stack
 
 - Java 17  
@@ -33,8 +35,6 @@ Permite cadastro e autenticação de usuários, além de operações de CRUD de 
 Você pode ajustar essas configurações em `src/main/resources/application.properties`.
 
 ## Configuração
-
-Arquivo `application.properties`:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/productdb
@@ -158,6 +158,7 @@ docker-compose up -d --build
 ```
 
 A API ficará disponível em `http://localhost:8080` e o banco de dados PostgreSQL na porta `5432`.
+*(Nota: Na primeira execução, o banco de dados pode levar alguns segundos para inicializar. A API aguardará automaticamente até que ele esteja pronto).*
 
 ---
 
@@ -168,4 +169,3 @@ Após a aplicação estar rodando, acesse:
 
 - Interface Visual (Swagger UI): `http://localhost:8080/swagger-ui.html`
 - JSON Docs: `http://localhost:8080/v3/api-docs`
-
