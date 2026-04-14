@@ -1,120 +1,252 @@
 # Product Management API
 
-API REST para gerenciamento de produtos com autenticação e autorização via JWT, desenvolvida em Spring Boot.  
-Permite cadastro e autenticação de usuários, além de operações de CRUD de produtos protegidas por token.
+[![Java 17](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+[![Spring Boot 3.5.7](https://img.shields.io/badge/Spring_Boot-3.5.7-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Maven](https://img.shields.io/badge/Maven-Build-C71A36?logo=apachemaven&logoColor=white)](https://maven.apache.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?logo=swagger&logoColor=black)](http://localhost:8080/swagger-ui.html)
 
-![Demonstração do Swagger UI](./.docs/swagger-ui-screenshot.png)
+API REST para gerenciamento de produtos com autenticação stateless via JWT, cadastro e login de usuários, persistência em PostgreSQL e documentação interativa com Swagger.
 
----
+O projeto foi construído com Spring Boot e expõe um fluxo simples e direto:
 
-## 🚀 Como Executar
+- cadastro de usuário com papel `USER` ou `ADMIN`
+- login com geração de token JWT
+- CRUD completo de produtos
+- listagem paginada de produtos
+- validação de payloads com retorno `422` para dados inválidos
+- documentação OpenAPI pronta para teste manual
 
-Você pode rodar este projeto de duas maneiras principais:
+> Hoje os endpoints protegidos exigem autenticação, mas não há regras diferentes por papel nas rotas de produto.
 
-### Opção 1: Usando Docker
+![Swagger UI](./.docs/swagger-ui-screenshot.png)
 
-Esta é a maneira mais fácil, pois o Docker configurará o banco de dados e a API automaticamente em containers separados.
+## O que a API entrega
+
+### Autenticação
+
+- `POST /api/auth/register` cria um usuário e já retorna um JWT
+- `POST /api/auth/login` autentica por e-mail e senha e retorna um JWT
+
+### Produtos
+
+- `POST /api/products` cria produto
+- `GET /api/products` lista produtos com paginação
+- `GET /api/products/{id}` busca produto por id
+- `PUT /api/products/{id}` atualiza produto
+- `DELETE /api/products/{id}` remove produto
+
+Cada produto possui os campos:
+
+- `id`
+- `name`
+- `description`
+- `price`
+- `stock`
+- `createdAt`
+- `updatedAt`
+
+## Stack
+
+- Java 17
+- Spring Boot 3.5.7
+- Spring Web
+- Spring Data JPA
+- Spring Security
+- Spring Validation
+- SpringDoc OpenAPI / Swagger UI
+- PostgreSQL
+- JWT com `jjwt`
+- Lombok
+- Maven
+- Docker e Docker Compose
+- H2 para testes
+
+## Como executar
+
+### Opção 1: Docker Compose
+
+Sobe a API e o PostgreSQL juntos.
 
 ```bash
-# Na raiz do projeto, execute o comando:
 docker-compose up -d --build
 ```
-A API ficará disponível em `http://localhost:8080`.
 
-> **Nota:** Na primeira execução, o banco de dados pode levar alguns segundos para inicializar. A API aguardará automaticamente até que ele esteja pronto.
+A aplicação ficará disponível em `http://localhost:8080`.
 
-### Opção 2: Localmente usando Maven
+Serviços criados:
 
-1. **Banco de Dados**: Certifique-se de ter um PostgreSQL rodando localmente na porta `5432` com as seguintes credenciais padrão:
-   - Banco de dados: `productdb`
-   - Usuário: `postgres`
-   - Senha: `postgres`
-   *(Caso precise, ajuste essas configurações no arquivo `src/main/resources/application.properties`)*
+- API: `http://localhost:8080`
+- PostgreSQL: `localhost:5432`
 
-2. **Iniciando a Aplicação**: No terminal, na raiz do projeto, execute:
+### Opção 2: execução local
+
+Pré-requisitos:
+
+- Java 17
+- PostgreSQL rodando localmente
+
+Configuração padrão esperada pela aplicação:
+
+- banco: `productdb`
+- usuário: `postgres`
+- senha: `postgres`
+
+Esses valores estão em `src/main/resources/application.properties` e podem ser sobrescritos por variáveis de ambiente.
+
+Para iniciar:
+
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
-A API ficará disponível em `http://localhost:8080`.
+No Windows:
 
----
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
-## 📖 Documentação da API (Swagger / OpenAPI)
+## Variáveis principais
 
-A documentação interativa da API já está configurada com o **SpringDoc OpenAPI**. Após a aplicação estar rodando, você pode testar todos os endpoints pela interface:
+Configurações default do projeto:
 
-- **Interface Visual (Swagger UI)**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-- **JSON Docs**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/productdb
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+server.port=8080
+security.jwt.expiration-ms=3600000
+```
 
----
+O projeto já aceita sobrescrita por ambiente, por exemplo:
 
-## 🛠️ Tecnologias e Stack
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+- `SPRING_JPA_HIBERNATE_DDL_AUTO`
 
-- **Java 17**
-- **Spring Boot 3** (Web, Data JPA, Security, Validation)
-- **PostgreSQL**
-- **JWT** (`io.jsonwebtoken`) para autenticação
-- **Lombok**
-- **Maven**
-- **Docker & Docker Compose**
+## Documentação da API
 
----
+Com a aplicação em execução:
 
-## 🔒 Autenticação
+- Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 
-A aplicação utiliza autenticação baseada em tokens JWT. O fluxo básico de uso é:
+## Fluxo de autenticação
 
-1. Registre um novo usuário através do endpoint `POST /api/auth/register`.
-2. Realize o login no endpoint `POST /api/auth/login`.
-3. Utilize o token gerado passando-o no header `Authorization` de todas as chamadas protegidas:
+1. Crie um usuário em `POST /api/auth/register`.
+2. Copie o token retornado.
+3. Envie o token no header `Authorization` para acessar `/api/products`.
 
 ```http
 Authorization: Bearer SEU_TOKEN_JWT
 ```
 
----
+## Exemplos de payload
 
-## 🔀 Endpoints Principais
+### Registro
 
-### Autenticação (`/api/auth`)
-
-- `POST /api/auth/register`: Registra um novo usuário no sistema.
-- `POST /api/auth/login`: Valida as credenciais e retorna o token JWT.
-
-*Exemplo de Body (Registro e Login):*
 ```json
 {
-  "name": "Usuário Teste",           // Apenas no Register
-  "email": "user@example.com",
-  "password": "senha123",
-  "role": "ADMIN"                    // Apenas no Register (Opcional)
+  "name": "Felipe",
+  "email": "felipe@example.com",
+  "password": "123456",
+  "role": "ADMIN"
 }
 ```
 
-### Produtos (`/api/products`)
+### Login
 
-*Atenção: A maioria dos endpoints de produtos são protegidos e exigem que o token JWT seja enviado no Header.*
+```json
+{
+  "email": "felipe@example.com",
+  "password": "123456"
+}
+```
 
-- `POST /api/products`: Cria um novo produto no banco de dados.
-- `GET /api/products`: Retorna uma lista paginada de todos os produtos (suporta parâmetros na URL: `page`, `size`, `sort`).
-- `GET /api/products/{id}`: Retorna os dados de um produto específico através do ID.
-- `PUT /api/products/{id}`: Atualiza completamente os dados de um produto existente.
-- `DELETE /api/products/{id}`: Remove o produto do sistema.
+### Criação de produto
 
----
+```json
+{
+  "name": "Notebook Pro 14",
+  "description": "Notebook para uso profissional",
+  "price": 6499.90,
+  "stock": 12
+}
+```
 
-## ⚠️ Tratamento de Erros
+### Resposta de autenticação
 
-A API possui um controle global de exceções coordenado pela classe `GlobalExceptionHandler`. 
-Erros de validação (ex: campos obrigatórios não preenchidos) e exceções de negócio são capturados e retornam um formato padronizado amigável (`ApiError`), incluindo detalhes claros sobre os campos que falharam.
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9..."
+}
+```
 
----
+## Paginação
 
-## 🧪 Testes
+`GET /api/products` usa `Pageable` do Spring e aceita parâmetros como:
 
-A aplicação conta com testes unitários e de integração para garantir seu correto funcionamento. Para executar toda a suíte de testes, rode:
+- `page`
+- `size`
+- `sort`
+
+Exemplo:
+
+```http
+GET /api/products?page=0&size=10&sort=name,asc
+```
+
+## Validações e erros
+
+A API possui tratamento global para:
+
+- `404 Not Found` quando um recurso não existe
+- `422 Unprocessable Entity` quando o payload falha em validação
+
+Regras de validação já implementadas:
+
+- `email` deve ser válido
+- `name` é obrigatório
+- `price` deve ser maior ou igual a `0`
+- `stock` deve ser maior ou igual a `0`
+- `description` aceita no máximo `500` caracteres
+
+Exemplo de erro de validação:
+
+```json
+{
+  "status": 422,
+  "error": "Validation Error",
+  "message": "Dados inválidos",
+  "timestamp": "2026-01-01T10:00:00Z",
+  "fieldErrors": [
+    {
+      "field": "price",
+      "message": "must be greater than or equal to 0.0"
+    }
+  ]
+}
+```
+
+## Testes
+
+Os testes usam H2 em memória e cobrem:
+
+- carregamento do contexto Spring
+- regras de cadastro de usuário
+- regras principais do serviço de produtos
+
+Para executar:
 
 ```bash
-mvn test
+./mvnw test
+```
+
+No Windows:
+
+```powershell
+.\mvnw.cmd test
 ```
